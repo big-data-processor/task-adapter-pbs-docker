@@ -1,0 +1,95 @@
+# This is an incomplete template to configure the adapter.
+---
+cpus: "{{option.cpus}}"
+mem: "{% set memObj = option.mem | humanizeMemory %}{{ memObj.value }}{{ memObj.unit | lower }}"
+arg-recipe: |
+  - -l
+  - select={{ jobObj.nodes }}:ncpus={{ jobObj.cpus }}:mem={{ jobObj.mem }}
+  - -v
+  - "PBS_O_WORKDIR={{ option.workdir if option.workdir else option.projectFolder }}"
+  - -V
+  - -k
+  - oe
+  - -N
+  - "{{ jobObj.jobId }}"
+  - "{{ -q if option.queue}}"
+  - "{{ option.queue if option.queue }}"
+  - "--"
+  {% if jobObj.image %}
+  - {{ option.dockerPath if option.dockerPath else '/bin/docker' }}
+  - run
+  - --rm
+  {% if option.entrypoint %}
+  - --entrypoint={{ option.entrypoint }}
+  {% endif %}
+  {% if option.projectFolder %}
+  - -v 
+  - {{ option.projectFolder }}:/project
+  - -e
+  - PROJECT_FOLDER={{ option.projectFolder }}
+  {% endif %}
+  {% if option.sharedFolder %}
+  - -v
+  - {{ option.sharedFolder }}:/shared
+  - -e 
+  - SHARED_FOLDER={{ option.sharedFolder }}
+  {% endif %}
+  {% if option.packageFolder %}
+  - -v
+  - {{ option.packageFolder }}:/package
+  - -e
+  - PACKAGE_FOLDER={{ option.packageFolder }}
+  {% endif %}
+  {% if option.tmpfs %}
+  - --tmpfs 
+  - {{ option.tmpfs }}
+  {% endif %}
+  {% for envKey in (option.env | _('keys')) %}
+  - -e
+  - {{ envKey }}={{ option.env[envKey] }}
+  {% endfor %}
+  {% if option.workdir %}
+  - --workdir
+  - {{ option.workdir }}
+  {% endif %}
+  {% if os.platform() !== 'win32' %}
+  - -e
+  - HOST_USER_ID={{ os.userInfo().uid }}
+  - -e
+  - HOST_USER_GROUP={{ os.userInfo().gid }}
+  {% endif %}
+  {% if option.setUser %}
+  - --user
+  {% if option.user %}
+  - {{ option.user }}
+  {% else %}
+  - {{ os.userInfo().uid }}:{{ os.userInfo().gid }}
+  {% endif %}
+  {% endif %}
+  {% if option.extFolders | _('isArray') %}
+  {% for extFolder in option.extFolders %}
+  - -v
+  - {{ extFolder }}:{{ extFolder }}
+  {% endfor %}
+  {% endif %}
+  - --name
+  - {{ jobObj.jobId }}
+  - --cpus
+  - {{ jobObj.cpus }}
+  - --memory
+  - {{ jobObj.mem }}
+  - {{ jobObj.image }}
+  - {{ jobObj.exec }}
+  {% for arg in jobObj.taskArgs %}
+  {% if (arg | trim) %}
+  - "\"{{ arg | trim | replace(r/\"/g, '\\"') }}\""
+  {% endif -%}
+  {% endfor %}
+  {% else %}
+  - {{ jobObj.exec }}
+  {% for arg in jobObj.taskArgs %}
+  {% if arg | trim %}
+  - "\"{{ arg | trim | replace(r/\"/g, '\\"') }}\""
+  {% endif %}
+  {% endfor %}
+  {% endif %}
