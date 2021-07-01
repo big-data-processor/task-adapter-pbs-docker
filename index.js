@@ -105,8 +105,8 @@ class BdpPbsAdapter extends BdpTaskAdapter {
     };
   }
   async jobExitCallback(jobObj, exitCode, signal) {
-    jobObj.stdout = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobId + "-stdout.txt");
-    jobObj.stderr = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobId + "-stderr.txt");
+    jobObj.stdout = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobObj.jobId + "-stdout.txt");
+    jobObj.stderr = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobObj.jobId + "-stderr.txt");
     return {exitCode, signal};
   }
   async detectJobStatus() {
