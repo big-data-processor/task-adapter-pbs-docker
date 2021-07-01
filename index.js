@@ -115,6 +115,11 @@ class BdpPbsAdapter extends BdpTaskAdapter {
       isRunning: false
     };
   }
+  async jobExitCallback(jobObj, exitCode, signal) {
+    jobObj.stdout = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobId + "-stdout.txt");
+    jobObj.stderr = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobId + "-stderr.txt");
+    return {exitCode, signal};
+  }
   async detectJobStatus() {
     try {
       for (const [jobId, runningJob] of this.runningJobs.entries()) {
@@ -133,8 +138,6 @@ class BdpPbsAdapter extends BdpTaskAdapter {
         const {jobState, exitCode} = jobStateObj;
         // TODO: allow using more jobStats to corrected inform the BDP whether the job stops or not.
         if (jobState === 'F' && exitCode !== undefined) {
-          jobObj.stdout = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobId + "-stdout.txt");
-          jobObj.stderr = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobId + "-stderr.txt");
           await this.emitJobStatus(jobId, exitCode, null);
         } else if (jobState === 'R') {
           runningJob.isRunning = true;
