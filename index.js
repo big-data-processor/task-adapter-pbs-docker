@@ -66,7 +66,7 @@ class BdpPbsAdapter extends BdpTaskAdapter {
         }
         const stderrExists = await fse.pathExists(jobObj.stderr);
         if (stderrExists) {
-          const targetSTDerr = path.join(jobObj.option.taskLogFolder, jobObj.taskName, taskID + "-stderr.txt");
+          const targetSTDerr = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobId + "-stderr.txt");
           await fse.move(jobObj.stderr, targetSTDerr, {overwrite: true});
         }
       })().catch(console.log));
