@@ -58,17 +58,6 @@ class BdpPbsAdapter extends BdpTaskAdapter {
       deletingPromises.push((async () => {
         await spawnProcessAsync("qdel", [pbsJobID], "qdel-job-" + pbsJobID, {mode: "pipe", verbose: false, shell: true});
         process.stderr.write(`[${new Date().toString()}] qdel ${pbsJobID} executed.` + "\n");
-        await sleep(3000);
-        const stdoutExists = await fse.pathExists(jobObj.stdout);
-        if (stdoutExists) {
-          const targetSTDout = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobId + "-stdout.txt");
-          await fse.move(jobObj.stdout, targetSTDout, {overwrite: true});
-        }
-        const stderrExists = await fse.pathExists(jobObj.stderr);
-        if (stderrExists) {
-          const targetSTDerr = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobId + "-stderr.txt");
-          await fse.move(jobObj.stderr, targetSTDerr, {overwrite: true});
-        }
       })().catch(console.log));
       if (deletingPromises.length >= 10) {
         await (Promise.all(deletingPromises).catch(console.log));
@@ -123,7 +112,6 @@ class BdpPbsAdapter extends BdpTaskAdapter {
   async detectJobStatus() {
     try {
       for (const [jobId, runningJob] of this.runningJobs.entries()) {
-        const jobObj = this.getJobById(jobId);
         const pbsJobId = runningJob.runningJobId;
         let jobStateObj;
         try {
