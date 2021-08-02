@@ -88,7 +88,7 @@ class BdpPbsAdapter extends BdpTaskAdapter {
     if (!matched || !matched[1]) {
       console.log('This job has been sent, but it did NOT return the job ID\n' +
             'Please try increasing the options.delayInterval value to avoid submitting too many jobs at one time.\n' +
-            'You might also need to manually delete this unknown job.' + "\n"
+            'You might also need to manually delete this unknown job.' + "\n" +
             `The job command is 'qsub ${jobObj.args.join(' ')}'`);
       sleep(3000).then(() => this.emitJobStatus(jobObj.jobId, 87, null)).catch(console.log);
     } else {
