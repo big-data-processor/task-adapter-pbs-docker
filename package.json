@@ -1,6 +1,6 @@
 {
   "name": "@big-data-processor/task-adapter-pbs-docker",
-  "version": "0.9.14",
+  "version": "0.9.14-patch.0",
   "description": "",
   "main": "index.js",
   "scripts": {

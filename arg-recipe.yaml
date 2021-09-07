@@ -40,6 +40,10 @@ arg-recipe: |
   - -e
   - PACKAGE_FOLDER={{ option.packageFolder }}
   {% endif %}
+  {% if option.pull %}
+  - --pull
+  - {{ option.pull }}
+  {% endif %}
   {% if option.tmpfs %}
   - --tmpfs 
   - {{ option.tmpfs }}
