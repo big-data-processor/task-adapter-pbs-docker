@@ -1,6 +1,6 @@
 {
   "name": "@big-data-processor/task-adapter-pbs-docker",
-  "version": "0.9.16",
+  "version": "0.9.17",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,8 @@
   "author": "Chi Yang",
   "license": "MIT",
   "dependencies": {
-    "@big-data-processor/task-adapter-base": "^0.9.16",
-    "@big-data-processor/utilities": "^0.8.9"
+    "@big-data-processor/task-adapter-base": "^0.9.17",
+    "@big-data-processor/utilities": "^0.9.0"
   },
   "big-data-processor": {
     "name": "PBS",
