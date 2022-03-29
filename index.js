@@ -5,6 +5,7 @@ const child_process = require("child_process"),
   EventEmitter = require("events"),
   utilities = require("@big-data-processor/utilities"),
   fse = utilities.fse,
+  sshClient = require('ssh2').Client,
   sleep = utilities.sleep,
   memHumanize = utilities.humanizeMemory,
   spawnProcessAsync = utilities.spawnProcessAsync,
@@ -16,7 +17,7 @@ const __checkJobStatus = function(pbsJobId) {
     let jobInfo = "";
     qstatProcess.stdout.on("readable", () => {
       const data = qstatProcess.stdout.read();
-      jobInfo += data;
+      if (data) jobInfo = jobInfo + data.toString();
     });
     qstatProcess.on("error", err => reject(err));
     qstatProcess.on("exit", (code) => {
@@ -109,6 +110,12 @@ class BdpPbsAdapter extends BdpTaskAdapter {
     jobObj.stderr = path.join(jobObj.option.taskLogFolder, jobObj.taskName, jobObj.jobId + "-stderr.txt");
     return {exitCode, signal};
   }
+  // async determineJobProxy(jobObj) {
+  //   const pbsJobId = jobObj.pid;
+  //   // 1. qstat -xf jobId ==> get the exec_host
+  //   // 2. ssh exec_host and use docker inspect command to retrieve the container port
+  //   // 3. return proxy object
+  // }
   async detectJobStatus() {
     try {
       for (const [jobId, runningJob] of this.runningJobs.entries()) {
